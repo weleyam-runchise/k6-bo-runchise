@@ -1,0 +1,10 @@
+# Environment Variables
+.env
+
+# k6 generated reports
+reports/*.html
+summary.html
+
+# Node modules (if any in future)
+node_modules/
+package-lock.json
