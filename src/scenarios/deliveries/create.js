@@ -55,6 +55,8 @@ export default function (accessToken) {
         'has delivery id': (r) => r.json('delivery_detail.id') !== undefined,
         'status is sent': (r) => r.json('delivery_detail.status') === 'sent',
     });
+
+    console.log(`Response: ${res.body}`);
 }
 
 export function handleSummary(data) {
