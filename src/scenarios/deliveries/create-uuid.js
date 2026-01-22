@@ -19,19 +19,25 @@ export default function (accessToken) {
     const url = `${BASE_URL}/deliveries`;
     const payload = JSON.stringify({
         "delivery_transaction": {
-            "delivery_date": "16/12/2025",
-            "location_to_id": 2661,
+            "delivery_date": "22/01/2026",
+            "location_to_id": 2657,
             "location_to_type": "Location",
             "location_from_id": 2652,
             "location_from_type": "Location",
-            "notes": "k6 load test",
             "acceptance_proofs": [],
             "delivery_proofs": [],
+            "unique_key": "b1de04cc-517b-4e49-a06c-b9e770b695a2",
             "delivery_transaction_lines_attributes": [
                 {
-                    "order_transaction_id": 34623,
-                    "order_transaction_line_id": 56606,
-                    "delivered_qty": "1",
+                    "order_transaction_id": 35062,
+                    "order_transaction_line_id": 57385,
+                    "delivered_qty": "30",
+                    "expiry_details": []
+                },
+                {
+                    "order_transaction_id": 35062,
+                    "order_transaction_line_id": 57386,
+                    "delivered_qty": "25",
                     "expiry_details": []
                 }
             ]

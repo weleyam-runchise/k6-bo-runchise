@@ -10,3 +10,61 @@ export function getTimestampString() {
 
     return `${year}${month}${day}${hours}${minutes}${seconds}`;
 }
+
+export function getDetailedTimestamp() {
+    const now = new Date();
+    return now.toISOString();
+}
+
+export function generateRequestId(vu, iter) {
+    return `VU${vu}_ITER${iter}`;
+}
+
+export function logRequestResponse(method, url, requestData, response) {
+    const requestId = generateRequestId(__VU, __ITER);
+    const timestamp = getDetailedTimestamp();
+    
+    // Prepare request data
+    const requestLog = {
+        headers: requestData.headers || {},
+        body: requestData.body || null,
+    };
+    
+    // Prepare response data
+    const timings = response.timings || {};
+    const responseLog = {
+        status: response.status,
+        statusText: response.status_text || '',
+        headers: response.headers || {},
+        body: response.body || '',
+        timings: {
+            duration: timings.duration || 0,
+            waiting: timings.waiting || 0,
+            blocked: timings.blocked || 0,
+            connecting: timings.connecting || 0,
+            sending: timings.sending || 0,
+            receiving: timings.receiving || 0,
+        }
+    };
+    
+    // Create log entry
+    const logEntry = {
+        timestamp: timestamp,
+        requestId: requestId,
+        method: method,
+        url: url,
+        request: requestLog,
+        response: responseLog
+    };
+    
+    // Log as pretty-printed JSON for better readability
+    // Using JSON.stringify with 2-space indentation
+    const prettyJson = JSON.stringify(logEntry, null, 2);
+    // Log with separator markers for easy extraction
+    // Format: K6_LOG_START\n[pretty JSON]\nK6_LOG_END
+    console.log('K6_LOG_START');
+    console.log(prettyJson);
+    console.log('K6_LOG_END');
+    
+    return logEntry;
+}

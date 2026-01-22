@@ -6,6 +6,11 @@ Repo ini berisi skrip performance test untuk endpoint `product_stocks` Runchise 
 
 Sebelum menjalankan tes, pastikan Anda sudah menginstal **k6**:
 
+### macOS (Lewat Homebrew)
+```bash
+brew install k6
+```
+
 ### Windows (Lewat Winget)
 ```powershell
 winget install k6 --source winget
@@ -81,6 +86,66 @@ k6 run --vus 1 --iterations 30 --max-duration 1h src/scenarios/report/product_st
 - `--vus 1`: Satu user aktif.
 - `--iterations 30`: Tes akan berjalan tepat 30 kali siklus (loop `default` function). Setelah ke-30 selesai, tes berhenti otomatis.
 - `--max-duration 1h`: **Safety net** (batas waktu). Jika karena internet lambat 30 iterasi belum selesai dalam 1 jam, tes akan dipaksa berhenti supaya tidak hang selamanya.
+
+---
+
+## 📝 Request & Response Logging
+
+Semua skrip secara otomatis mencatat request dan response dalam format JSON yang dipasangkan (paired). Setiap log entry berisi:
+- Timestamp
+- Request ID (unik per VU dan iterasi)
+- Method HTTP
+- URL
+- Request headers dan body
+- Response status, headers, body, dan timings
+
+### Cara Menyimpan Log ke File
+
+Untuk menyimpan log ke file txt, redirect output console ke file dan filter log entries:
+
+```bash
+# Simpan semua log ke file txt (format JSON pretty-printed)
+# Extract JSON antara K6_LOG_START dan K6_LOG_END
+k6 run src/scenarios/deliveries/create-uuid.js 2>&1 | \
+  awk '/K6_LOG_START/,/K6_LOG_END/' | \
+  grep -v "K6_LOG_START" | \
+  grep -v "K6_LOG_END" | \
+  sed 's/.*msg="//' | sed 's/" source=console$//' | \
+  python3 -m json.tool > reports/delivery_logs.txt
+
+# Atau simpan semua output (termasuk log k6 lainnya) ke file teks
+k6 run src/scenarios/deliveries/create-uuid.js > reports/full_output.txt 2>&1
+```
+
+Format log JSON:
+```json
+{
+  "timestamp": "2026-01-22T13:30:45.123Z",
+  "requestId": "VU1_ITER5",
+  "method": "POST",
+  "url": "https://...",
+  "request": {
+    "headers": {...},
+    "body": "..."
+  },
+  "response": {
+    "status": 200,
+    "statusText": "OK",
+    "headers": {...},
+    "body": "...",
+    "timings": {
+      "duration": 123.45,
+      "waiting": 100.23,
+      "blocked": 5.12,
+      "connecting": 10.34,
+      "sending": 2.45,
+      "receiving": 5.31
+    }
+  }
+}
+```
+
+**Catatan:** Request dan response selalu berpasangan karena dicatat dalam satu log entry setelah response diterima.
 
 ---
 

@@ -3,7 +3,7 @@ import { check, sleep } from 'k6';
 import { htmlReport } from "https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js";
 import { login } from '../../../common/auth.js';
 import { BASE_URL } from '../../../common/config.js';
-import { getTimestampString } from '../../../common/utils.js';
+import { getTimestampString, logRequestResponse } from '../../../common/utils.js';
 
 export const options = {
     vus: 1,
@@ -50,6 +50,9 @@ export default function (accessToken) {
     const url = `${BASE_URL}/report/product_stocks?${queryParams}`;
 
     const res = http.get(url, params);
+
+    // Log request and response as paired JSON
+    logRequestResponse('GET', url, { headers: params.headers, body: null }, res);
 
     check(res, {
         'product stocks all status is 200': (r) => r.status === 200,
