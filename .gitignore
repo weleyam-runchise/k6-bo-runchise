@@ -2,7 +2,7 @@
 .env
 
 # k6 generated reports
-reports/*.html
+reports/
 summary.html
 
 # Node modules (if any in future)

@@ -3,7 +3,7 @@ import { check, sleep } from 'k6';
 import { htmlReport } from "https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js";
 import { login } from '../../common/auth.js';
 import { BASE_URL } from '../../common/config.js';
-import { getTimestampString, logRequestResponse } from '../../common/utils.js';
+import { getTimestampString, logRequestResponse, generateUUID } from '../../common/utils.js';
 
 export const options = {
     vus: 1,
@@ -17,6 +17,13 @@ export function setup() {
 
 export default function (accessToken) {
     const url = `${BASE_URL}/deliveries`;
+    
+    // Determine UUID mode: 'random' for new UUID per hit, 'static' or any other value for fixed UUID
+    // Can be set via environment variable: -e UUID_MODE=random
+    const uuidMode = __ENV.UUID_MODE || 'static';
+    const staticUUID = "b1de04cc-517b-4e49-a06c-b9e770b695a2";
+    const uniqueKey = uuidMode === 'random' ? generateUUID() : staticUUID;
+    
     const payload = JSON.stringify({
         "delivery_transaction": {
             "delivery_date": "22/01/2026",
@@ -26,7 +33,7 @@ export default function (accessToken) {
             "location_from_type": "Location",
             "acceptance_proofs": [],
             "delivery_proofs": [],
-            "unique_key": "b1de04cc-517b-4e49-a06c-b9e770b695a2",
+            "unique_key": uniqueKey,
             "delivery_transaction_lines_attributes": [
                 {
                     "order_transaction_id": 35062,

@@ -87,6 +87,26 @@ k6 run --vus 1 --iterations 30 --max-duration 1h src/scenarios/report/product_st
 - `--iterations 30`: Tes akan berjalan tepat 30 kali siklus (loop `default` function). Setelah ke-30 selesai, tes berhenti otomatis.
 - `--max-duration 1h`: **Safety net** (batas waktu). Jika karena internet lambat 30 iterasi belum selesai dalam 1 jam, tes akan dipaksa berhenti supaya tidak hang selamanya.
 
+### 5. Delivery Scenarios - UUID Configuration
+
+Untuk skenario delivery (`create-uuid.js`), Anda bisa mengatur apakah `unique_key` menggunakan UUID **random** atau **static**:
+
+**Mode Static (Default)**
+```bash
+# Menggunakan UUID static yang sama untuk setiap request
+k6 run src/scenarios/deliveries/create-uuid.js
+```
+
+**Mode Random (UUID baru setiap hit)**
+```bash
+# Generate UUID baru untuk setiap request
+k6 run -e UUID_MODE=random src/scenarios/deliveries/create-uuid.js
+```
+
+**Penjelasan:**
+- **Static mode**: Menggunakan UUID yang sama (`b1de04cc-517b-4e49-a06c-b9e770b695a2`) untuk semua request. Berguna untuk testing dengan data yang konsisten.
+- **Random mode**: Generate UUID v4 baru setiap kali function `default` dipanggil. Berguna untuk testing dengan data yang unik setiap request.
+
 ---
 
 ## 📝 Request & Response Logging
